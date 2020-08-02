@@ -26,8 +26,7 @@ public final class ExplodePlayer extends JavaPlugin implements Listener {
     public void beginKills() {
         new BukkitRunnable() {
             public void run() {
-                try {
-                    Player target = Bukkit.getOnlinePlayers().stream().findAny().get();
+                    Player target = Bukkit.getOnlinePlayers().stream().findAny().get(); //TODO MAKE THIS RANDOM
                     if (target == null) return;
                     if (target.getGameMode() == GameMode.CREATIVE) {
                         Bukkit.broadcastMessage(ChatColor.AQUA + "You were saved this time! Won't be so lucky next time!");
@@ -40,9 +39,6 @@ public final class ExplodePlayer extends JavaPlugin implements Listener {
                     target.setHealth(0);
                     target.getLocation().getWorld().createExplosion(target.getLocation(), 1, true);
                     Bukkit.broadcastMessage(ChatColor.RED + "60 seconds to next explosion!");
-                } catch (NoSuchElementException e) {
-                    return;
-                }
             }
         }.runTaskTimer(this, 0L, 1200L);
     }
