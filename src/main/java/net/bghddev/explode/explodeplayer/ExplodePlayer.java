@@ -10,30 +10,39 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.NoSuchElementException;
+
 public final class ExplodePlayer extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(this, this);
+        Metrics metrics = new Metrics(this, 8385);
         beginKills();
-    }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
     }
 
     public void beginKills() {
         new BukkitRunnable() {
             public void run() {
-                Player target = Bukkit.getOnlinePlayers().iterator().next();
-                if (target == null) return;
-                if (target.getGameMode() == GameMode.CREATIVE) return;
-                if (target.isDead()) return;
-                target.setHealth(0);
-                target.getLocation().getWorld().createExplosion(target.getLocation(), 1, true);
-                Bukkit.broadcastMessage(ChatColor.RED + "60 seconds to next explosion!");
+                try {
+                    Player target = Bukkit.getOnlinePlayers().stream().findAny().get();
+                    if (target == null) return;
+                    if (target.getGameMode() == GameMode.CREATIVE) {
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "You were saved this time! Won't be so lucky next time!");
+                        return;
+                    }
+                    if (target.isDead()) {
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "You were saved this time! Won't be so lucky next time!");
+                        return;
+                    }
+                    target.setHealth(0);
+                    target.getLocation().getWorld().createExplosion(target.getLocation(), 1, true);
+                    Bukkit.broadcastMessage(ChatColor.RED + "60 seconds to next explosion!");
+                } catch (NoSuchElementException e) {
+                    return;
+                }
             }
         }.runTaskTimer(this, 0L, 1200L);
     }
