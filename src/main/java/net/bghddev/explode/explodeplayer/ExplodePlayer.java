@@ -10,23 +10,25 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.Random;
 
-public final class ExplodePlayer extends JavaPlugin implements Listener {
+public class ExplodePlayer extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         getServer().getPluginManager().registerEvents(this, this);
         Metrics metrics = new Metrics(this, 8385);
         beginKills();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Enabled ExplodePlayer!");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Timer started....");
 
     }
 
     public void beginKills() {
         new BukkitRunnable() {
             public void run() {
-                    Player target = Bukkit.getOnlinePlayers().stream().findAny().get(); //TODO MAKE THIS RANDOM
+                    Player target = getRandomPlayer();
                     if (target == null) return;
                     if (target.getGameMode() == GameMode.CREATIVE) {
                         Bukkit.broadcastMessage(ChatColor.AQUA + "You were saved this time! Won't be so lucky next time!");
@@ -38,9 +40,17 @@ public final class ExplodePlayer extends JavaPlugin implements Listener {
                     }
                     target.setHealth(0);
                     target.getLocation().getWorld().createExplosion(target.getLocation(), 1, true);
-                    Bukkit.broadcastMessage(ChatColor.RED + "60 seconds to next explosion!");
+                    Bukkit.broadcastMessage(ChatColor.RED + "60 seconds tell next explosion!");
             }
         }.runTaskTimer(this, 0L, 1200L);
+    }
+
+    public static Player getRandomPlayer() {
+        ArrayList<Player> online = new ArrayList<>(Bukkit.getOnlinePlayers());
+        if (online.size() != 0) {
+            return online.get(new Random().nextInt(online.size()));
+        }
+        return null;
     }
 
     @EventHandler

@@ -2,5 +2,5 @@ name: ExplodePlayer
 version: ${project.version}
 main: net.bghddev.explode.explodeplayer.ExplodePlayer
 authors: [BGHDDevelopment]
-description: Players explode every min
-website: https://bghddevelopment.com
+description: Players explode every minute.
+website: https://youtube.com/BGHDDevelopment
